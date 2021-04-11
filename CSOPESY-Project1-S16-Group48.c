@@ -13,65 +13,75 @@ typedef char String20[21];
 
 typedef struct{
     int input[3];
-    int process[3][100] // dapat yung # of rows = details.input[1]
+    int process[3][100]; // dapat yung # of rows = details.input[1]
 }Feature;
 
 void GetInputs(FILE *fp, Feature *details){
-	int X,Y,Z;
-
     for(int i=0; i<3; i++){
         fscanf(fp, "%d", &details->input[i]);
+        // input[0] = X
+        // input[1] = Y
+        // input[2] = Z
     }
 
-    for(int i=0; i<3; i++){
-        for(int j=0; j<details.input[1]; j++){
-            fscanf(fp, "%d", &details->process[j][i]);
+    for(int row=0; row<3; row++){
+        for(int col=0; col<details->input[1]; col++){
+            fscanf(fp, "%d", &details->process[row][col]);
+            // printf("%d ", details->process[row][col]);
         }
+        // printf("\n");
     }
-
-    // for(i=0; i<10; i++){
-    //     for(j=0; j<10; j++){
-    //         fscanf(fp, "%d", &details->X);
-    //     }
-    // }
-
-    fscanf(fp, "%d", &X);
-    // printf("%d", X);
-
-    fscanf(fp, "%d", &Y);
-    // printf("%d", Y);
-    
-    fscanf(fp, "%d", &Z);
-    // printf("%d", Z);
-
-	// for(i=0;i<MAX_ANIMALS;i++){
-	// 	for(j=0;j<MAX_BINARY;j++){
-	// 		fscanf(fp,"%d",&details->AnimalFeatures[i][j]);
-	// 	}
-
-	// }
-
-	// for(i=0;i<MAX_ANIMALS;i++){
-	// 	fscanf(fp,"%s",details->ClassName[i]);
-	// }
-
-	// for(i=0;i<=MAX_ANIMALS;i++){
-	// 	fgets(details->AnimalName[i-1],50,fp);
-	// }
-
-	// for(i=0;i<MAX_ANIMALS;i++){
-	// 	details->AnimalNum[i] = 0;
-	// }
 }
 
 void FCFS(Feature details){
+	int WT = 0, // Waiting Time
+        TT = 0, // Turnaround Time
+        ST = 0, // Start Time
+        ET = 0, // End Time
+        AWT = 0; // Average Waiting Time
+    float FAWT = 0.0; // Final Average Waiting Time
+    
     for(int i=0; i<details.input[1]; i++){
+        ST = ET;
+        ET = ET + details.process[i][2];
+        WT = ST;
+        TT = TT + details.process[i][2];
+        AWT = AWT + WT;
         printf("\nP[%d]", i);
-        printf("\nStart Time: %d  End Time: %d ", i, i);
-        printf("\nWaiting Time: %d", i);
-        printf("\nTurnaround Time: %d", i);
+        printf("\nStart Time: %d  End Time: %d ", ST, ET);
+        printf("\nWaiting Time: %d", WT);
+        printf("\nTurnaround Time: %d", TT);
         printf("\n************************************");
     }
+
+    FAWT = AWT / details.input[1];
+    printf("\nAverage Waiting Time: %.2f", FAWT);
+    
+};
+
+void NSJF(Feature details){
+	int WT = 0, // Waiting Time
+        TT = 0, // Turnaround Time
+        ST = 0, // Start Time
+        ET = 0, // End Time
+        AWT = 0; // Average Waiting Time
+    float FAWT = 0.0; // Final Average Waiting Time
+    
+    for(int i=0; i<details.input[1]; i++){
+        ST = ET;
+        ET = ET + details.process[i][2];
+        WT = ST;
+        TT = TT + details.process[i][2];
+        AWT = AWT + WT;
+        printf("\nP[%d]", i);
+        printf("\nStart Time: %d  End Time: %d ", ST, ET);
+        printf("\nWaiting Time: %d", WT);
+        printf("\nTurnaround Time: %d", TT);
+        printf("\n************************************");
+    }
+
+    FAWT = AWT / details.input[1];
+    printf("\nAverage Waiting Time: %.2f", FAWT);
     
 };
 
@@ -87,12 +97,7 @@ int main(){
         }
     //get inputs
     GetInputs(fp,&details);
-    // fscanf(fp,"%d",&rounds);
     fclose(fp);
-
-    
-    // printf("Input values X Y Z: ");
-    // scanf("%d %d %d", &X, &Y, &Z);
 
     // while( (X != 0 || X != 1 || X != 2 || X != 3) && (Y <= 3 || Y >= 100) ){
     //     printf("Invalid input, please try again: ");
@@ -108,23 +113,24 @@ int main(){
         // First Come First Serve (FCFS)
         case 0: 
             printf("First Come First Serve (FCFS) Scheduling");
-            printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
+            // printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
             FCFS(details);
             break;
         // Non-preemptive Shortest-Job First (NSJF)
         case 1:
             printf("Non-preemptive Shortest-Job First (NSJF)");
-            printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
+            // printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
+            NSJF(details);
             break;
         // Preemptive Shortest-Job First (PSJF) 
         case 2:
             printf("Preemptive Shortest-Job First (PSJF)");
-            printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
+            // printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
             break;
         // Round-Robin (RR)
         case 3:
             printf("Round-Robin (RR)");
-            printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
+            // printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
             break;
 
         // default:

@@ -13,7 +13,7 @@ typedef char String20[21];
 
 typedef struct{
     int input[3];
-    int process[3][100]; // dapat yung # of rows = details.input[1]
+    int process[100][3]; // dapat yung # of rows = details.input[1]
 }Feature;
 
 void GetInputs(FILE *fp, Feature *details){
@@ -60,31 +60,31 @@ void FCFS(Feature details){
     
 };
 
-void NSJF(Feature details){
-	int WT = 0, // Waiting Time
-        TT = 0, // Turnaround Time
-        ST = 0, // Start Time
-        ET = 0, // End Time
-        AWT = 0; // Average Waiting Time
-    float FAWT = 0.0; // Final Average Waiting Time
+// void NSJF(Feature details){
+// 	int WT = 0, // Waiting Time
+//         TT = 0, // Turnaround Time
+//         ST = 0, // Start Time
+//         ET = 0, // End Time
+//         AWT = 0; // Average Waiting Time
+//     float FAWT = 0.0; // Final Average Waiting Time
     
-    for(int i=0; i<details.input[1]; i++){
-        ST = ET;
-        ET = ET + details.process[i][2];
-        WT = ST;
-        TT = TT + details.process[i][2];
-        AWT = AWT + WT;
-        printf("\nP[%d]", i);
-        printf("\nStart Time: %d  End Time: %d ", ST, ET);
-        printf("\nWaiting Time: %d", WT);
-        printf("\nTurnaround Time: %d", TT);
-        printf("\n************************************");
-    }
+//     for(int i=0; i<details.input[1]; i++){
+//         ST = ET;
+//         ET = ET + details.process[i][2];
+//         WT = ST;
+//         TT = TT + details.process[i][2];
+//         AWT = AWT + WT;
+//         printf("\nP[%d]", i);
+//         printf("\nStart Time: %d  End Time: %d ", ST, ET);
+//         printf("\nWaiting Time: %d", WT);
+//         printf("\nTurnaround Time: %d", TT);
+//         printf("\n************************************");
+//     }
 
-    FAWT = AWT / details.input[1];
-    printf("\nAverage Waiting Time: %.2f", FAWT);
+//     FAWT = AWT / details.input[1];
+//     printf("\nAverage Waiting Time: %.2f", FAWT);
     
-};
+// };
 
 int main(){
     FILE *fp;
@@ -125,7 +125,7 @@ int main(){
         case 1:
             printf("Non-preemptive Shortest-Job First (NSJF)");
             // printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
-            NSJF(details);
+            // NSJF(details);
             break;
         // Preemptive Shortest-Job First (PSJF) 
         case 2:

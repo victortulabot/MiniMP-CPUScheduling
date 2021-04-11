@@ -24,16 +24,17 @@ void GetInputs(FILE *fp, Feature *details){
         // input[2] = Z
     }
 
-    for(int row=0; row<3; row++){
-        for(int col=0; col<details->input[1]; col++){
+    for(int row=0; row<details->input[1]; row++){
+        for(int col=0; col<3; col++){
             fscanf(fp, "%d", &details->process[row][col]);
-            // printf("%d ", details->process[row][col]);
+            printf("%d ", details->process[row][col]);
         }
-        // printf("\n");
+        printf("\n");
     }
 }
 
 void FCFS(Feature details){
+    printf("pasok");
 	int WT = 0, // Waiting Time
         TT = 0, // Turnaround Time
         ST = 0, // Start Time
@@ -90,8 +91,12 @@ int main(){
     String20 filename;
     Feature details;
 
+    //ask user for input file
+    printf("Input filename: ");
+    scanf("%s", filename);
+
     //open input file
-    if((fp = fopen("Sample1.txt","r")) == NULL){
+    if((fp = fopen(filename,"r")) == NULL){
             printf("ERROR");
             exit(1);
         }

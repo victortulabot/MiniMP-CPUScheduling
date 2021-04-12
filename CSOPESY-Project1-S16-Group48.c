@@ -104,7 +104,7 @@ void NSJF(Feature details){
         
         ST = ET;
         ET = ET + details.process[temp][2];
-        WT = ST;
+        WT = ST - details.process[temp][1];
         TT = TT + details.process[temp][2];
         AWT = AWT + WT;
         printf("\nP[%d]", details.process[temp][0]);

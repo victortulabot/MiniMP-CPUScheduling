@@ -318,13 +318,17 @@ void RR(Feature details){
         temp = 0, temp2 = 0,
         lET = 0, // Last Ending Time of finished process
         nProcess = details.input[1], // # of processes
+        AT = 0, // Arrival Time
         QT = details.input[2]; // Quantum Time
     float AWT = 0.0; // Average Waiting Time
-    int flag[details.input[1]],
-        data[50][4];
+    int flag[details.input[1]][details.input[1]],
+        data[50][4],
+        BT[details.input[1]];
 
     for(int i=0; i<details.input[1]; i++){
-        flag[i] = 0;
+        flag[i][0] = 0; // flag[i][0] = flag 
+        flag[i][1] = details.process[i][1]; // flag[i][1] = AT
+        BT[i] = details.process[i][2]; // burst time
     }
     for(int i=0; i<50; i++){
         for(int j=0; j<4; j++){
@@ -334,28 +338,32 @@ void RR(Feature details){
 
     for(int i=0; i<nProcess; i++){
         temp = i;
-        temp2 = temp;
+        // temp2 = temp;
         // for(int p=0; p<details.input[1]; p++){
-        //     printf("\npID: %d  AT: %d ", details.process[p][0], details.process[p][1]);
+        //     printf("\npID: %d  AT: %d BT: %d is flagged: %d", details.process[p][0], details.process[p][1], details.process[p][2], flag[p]);
         // }
         for (int j=0; j<details.input[1]; j++){
-            
+            // printf("\ntemp %d vs nProcess %d\n",temp,nProcess);
             // check if temp >= nProcess
-            if(temp >= details.input[1]){
-                temp = j;
+            if(temp >= nProcess-1){
+                if(details.process[j][1] >= 0){
+                    temp = j;
+                }
+                // printf("\ntemp is: %d", temp);
             }
-            // printf("\ntemp is: %d", temp);
+            
 
             // check arrival time
             if(details.process[j][1] < details.process[temp][1] && details.process[j][1] >= 0){
                 temp = j;
-                // printf("\ntemp is: %d", temp);
+                // printf("\ntemp is: %d AT", temp);
             }
         }
         
         // check burst time with quantum time
         if(details.process[temp][2] > QT){
-            flag[temp] = 1;
+            temp2 = temp;
+            flag[temp][0] = 1;
             nProcess++;
             int newTime = details.process[temp][2] - QT;
             ST = ET;
@@ -365,42 +373,49 @@ void RR(Feature details){
             data[i][2] = ET;
             data[i][3] = QT;
             details.process[temp][2] = newTime;
+            //  for(int p=0; p<nProcess; p++){
+            //     printf("\npID: %d  AT: %d ", details.process[p][0], details.process[p][1]);
+            // }
+            // look for highest arrival time
             for(int l=0; l<nProcess; l++){
+                // printf("\n%d vs %d",details.process[l][1],details.process[temp2][1]);
                 if(details.process[l][1] > details.process[temp2][1]){
                     // printf("\n%d > %d",details.process[l][1],details.process[temp2][1]);
                     temp2 = l;
                 }
             }
-            // printf("\nMax AT: %d", temp2);
-            details.process[temp][1] = temp2 + 1;
-            if(details.process[temp][2] <= 4){
-                // flag[temp] = 0;
-                nProcess--;
-            }
+            // printf("\nMax AT: %d", details.process[temp2][1]);
+            details.process[temp][1] = details.process[temp2][1] + 1;
+            // if(details.process[temp][2] <= 4){
+            //     // flag[temp] = 0;
+            //     nProcess--;
+            // }
             // printf("\nNew Arrival Time: %d for pID %d", details.process[temp][1], details.process[temp][0]);
             // printf("\nRemaining BT: %d",details.process[temp][2]);
         }
-        // else{
-        //     if(flag[temp] == 1 && details.process[temp][2] <= QT){
-        //         printf("\nlast iteration for pID %d", details.process[temp][0]);
-        //         int newTime = details.process[temp][2] - details.process[temp][2];
-        //         ST = ET;
-        //         ET = ET + details.process[temp][2];
-        //         data[i][0] = details.process[temp][0];
-        //         data[i][1] = ST;
-        //         data[i][2] = ET;
-        //         data[i][3] = details.process[temp][2];
-        //         details.process[temp][2] = newTime;
-        //         printf("\nRemaining BT: %d",details.process[temp][2]);
-        //     }
-        // }
-        
-        if(flag[temp] == 0 && details.process[temp][2] != 0){
+        else{
+            if(flag[temp][0] == 1 && details.process[temp][2] <= QT && details.process[temp][2] > 0){
+                nProcess++;
+                // printf("\nlast iteration for pID %d", details.process[temp][0]);
+                int newTime = details.process[temp][2] - details.process[temp][2];
+                ST = ET;
+                ET = ET + details.process[temp][2];
+                data[i][0] = details.process[temp][0];
+                data[i][1] = ST;
+                data[i][2] = ET;
+                data[i][3] = details.process[temp][2];
+                details.process[temp][2] = newTime;
+                // printf("\nRemaining BT: %d",details.process[temp][2]);
+            }
+        }
+        // printf("\nflag temp %d", flag[temp]);
+        if(flag[temp][0] == 0 && details.process[temp][2] > 0){
             ST = ET;
             ET = ET + details.process[temp][2];
-            WT = ST; 
+            
             lET = ET;
-            TT = WT + details.process[temp][2];
+            TT = ET - details.process[temp][1];
+            WT = TT - BT[temp]; 
             AWT = AWT + WT;
             printf("\nP[%d]", details.process[temp][0]);
             printf("\nStart Time: %d  End Time: %d ", ST, ET);
@@ -409,25 +424,28 @@ void RR(Feature details){
             printf("\n************************************");
             details.process[temp][1] = -1;
         }
-        else if (flag[temp] == 1 && details.process[temp][2] <= 4){ // == 0
-            printf("\nflagged %d",details.process[temp][0]);
+        else if (flag[temp][0] == 1 && details.process[temp][2] == 0){ // == 0
+            // printf("\nflagged %d",details.process[temp][0]);
             int cBT = 0;
             printf("\nP[%d]", details.process[temp][0]);
             for(int i=0; i<50; i++){
                 if(data[i][2] != 0 && data[i][0] == details.process[temp][0]){
                     printf("\nStart Time: %d  End Time: %d ", data[i][1], data[i][2]);
                     cBT += data[i][3];
+                    ST = data[i][1];
+                    ET = data[i][2];
                     // printf("\ni: %d of data[%d] = Start Time: %d  End Time: %d ",i , data[i][0], data[i][1], data[i][2]);
 
                 }
             }
-            ST = ET; //remove
+            // ST = ET; //remove
             ET = ET + details.process[temp][2];
-            WT = lET;
+            
             lET = ET;
-            TT = WT + cBT;
+            TT = ET - flag[temp][1];
+            WT = TT - BT[temp];
             AWT = AWT + WT;
-            printf("\nStart Time: %d  End Time: %d ", ST, ET); //remove
+            // printf("\nStart Time: %d  End Time: %d ", ST, ET); //remove
             printf("\nWaiting Time: %d", WT);
             printf("\nTurnaround Time: %d", TT);
             printf("\n************************************");

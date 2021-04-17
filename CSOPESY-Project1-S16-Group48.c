@@ -376,15 +376,41 @@ void RR(Feature details){
             //  for(int p=0; p<nProcess; p++){
             //     printf("\npID: %d  AT: %d ", details.process[p][0], details.process[p][1]);
             // }
-            // look for highest arrival time
-            for(int l=0; l<nProcess; l++){
-                // printf("\n%d vs %d",details.process[l][1],details.process[temp2][1]);
-                if(details.process[l][1] > details.process[temp2][1]){
-                    // printf("\n%d > %d",details.process[l][1],details.process[temp2][1]);
-                    temp2 = l;
+            /*
+                look for next arrival time
+                check if within process time
+            */
+           int cAT = flag[temp][1];
+           for(int p=0; p<nProcess; p++){
+               if(details.process[p][1] > details.process[temp2][1]){
+                   temp2 = p;
+               }
+           }
+           for(int p=0; p<nProcess; p++){
+               if(details.process[p][1] < details.process[temp2][1] && details.process[p][1] > cAT){ // check
+                   temp2 = p;
+               }
+           }
+           int newcAT = details.process[temp2][1] - 1;
+        //    printf("\nbefore: %d >= nice newcAT: %d",details.process[temp2][1], newcAT);
+           if(details.process[temp2][1] >= ST && details.process[temp2][1] <= ET && details.process[temp2][1] <= newcAT){
+               printf("\nnice pID: %d", details.process[temp2][0]);
+           }
+           else{
+               // look for highest arrival time
+                for(int l=0; l<nProcess; l++){
+                    // printf("\n%d vs %d",details.process[l][1],details.process[temp2][1]);
+                    if(details.process[l][1] >= details.process[temp2][1] && details.process[l][1] <= ET){
+                        // printf("\n%d > %d",details.process[l][1],details.process[temp2][1]);
+                        temp2 = l;
+                    }
                 }
-            }
+           }
+            
             // printf("\nMax AT: %d", details.process[temp2][1]);
+
+            // change arrival time for queue
+            
             details.process[temp][1] = details.process[temp2][1] + 1;
             // if(details.process[temp][2] <= 4){
             //     // flag[temp] = 0;

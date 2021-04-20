@@ -13,7 +13,7 @@ typedef char String20[21];
 
 typedef struct{
     int input[3];
-    int process[100][3]; // dapat yung # of rows = details.input[1]
+    int process[100][3];
 }Feature;
 
 void GetInputs(FILE *fp, Feature *details){
@@ -27,9 +27,7 @@ void GetInputs(FILE *fp, Feature *details){
     for(int row=0; row<details->input[1]; row++){
         for(int col=0; col<3; col++){
             fscanf(fp, "%d", &details->process[row][col]);
-            // printf("%d ", details->process[row][col]);
         }
-        // printf("\n");
     }
 }
 
@@ -45,14 +43,10 @@ void FCFS(Feature details){
         temp = i;
         for (int j=0; j<details.input[1]; j++){
             // check arrival time
-            // printf("\n%d temp %d",i, temp);
             if(details.process[j][1] < details.process[temp][1]){
-                // printf("\before %d %d", details.process[temp][1], details.process[j][1]);
                 temp = j;
-                // printf("\n%d temp sa loob %d",i, temp);
             }
         }
-        // printf("\ntemp sa labas %d",temp);
         ST = ET;
         ET = ET + details.process[temp][2];
         WT = ST;
@@ -167,52 +161,39 @@ void PSJF(Feature details){
             // if flag exists, get the skipped iteration
             if(isFlag == 1){
                 for(int m=0; m<details.input[1]; m++){
-                    // look for non 999 value
+                    // look only for < 999 value
                     if(details.process[m][2] < 999){
                         temp = m;
-                        // printf("\ni = %d\n", i);
-                        // printf("\ntemp = %d", temp);
                     }
                 }
             }
             
         }
-        // printf("\ntemp = %d", temp);
         for (int j=0; j<details.input[1]; j++){
             // first process
             if(i == 0){
-                // printf("\nj = %d < temp = %d", details.process[j][1], details.process[temp][1]);
-                // printf("\nk = %d", details.process[temp][1]);
-                // printf("\ntemp = %d", temp);
 
                 // look for the first arrival time
                 if(details.process[j][1] <= details.process[temp][1]){
                     temp = j;
                     temp2 = temp;
-                    // printf("pasok sa first iftemp = %d", temp);
 
                     // check next burst time
                     for(int k=0; k<details.input[1]; k++){
-                        // printf("\npasok sa second if temp = %d", temp);
 
                         // skip j or temp
                         if(k != temp){
                             // check next shortest burst time
                             if(details.process[k][2] < details.process[temp2][2]){
-                                // printf("\nprocesstemp2 = %d", details.process[temp2][2]);
-                                // printf("\nk = %d", k);
 
                                 // store burst time
                                 NBT = details.process[k][2];
-                                // printf("\tNBT = %d", NBT);
 
                                 // store arrival time
                                 NAT = details.process[k][1];
-                                // printf("\tNAT = %d", NAT);
 
                                 // change temp2
                                 temp2 = k;
-                                // printf("\ttemp2 = %d", temp2);
                                 flag[temp] = 1;
                             }
                         }
@@ -221,13 +202,11 @@ void PSJF(Feature details){
             }
             // check burst time
             else if(details.process[j][2] < details.process[temp][2]){
-                // printf("pasok");
                 temp = j;
             }
             // check arrival time if burst time is equal
             else if(details.process[j][2] == details.process[temp][2]){
                 if(details.process[j][1] < details.process[temp][1]){
-                    // printf("pasok2");
                     temp = j;
                 }
             }
@@ -236,7 +215,6 @@ void PSJF(Feature details){
         
 
         if(flag[temp] == 1 && i == 0){
-            // printf("\nfirst process %d %d", NAT, NBT);
             ST = ET;
             ET = ET + details.process[temp][2] - (details.process[temp][2] - NAT);
             data[i][0] = 0;
@@ -245,7 +223,6 @@ void PSJF(Feature details){
             nProcess++;
         }
         else{
-            // printf("\nloop # %d", i);
             ST = ET;
             ET = ET + details.process[temp][2];
             WT = ST - details.process[temp][1];
@@ -260,9 +237,6 @@ void PSJF(Feature details){
             else{
                 AWT = AWT + WT;
             }
-            // for(int n=0; n<details.input[1]; n++){
-            //     printf("\nflag n = %d",flag[n]);
-            // }
             printf("\nP[%d]", details.process[temp][0]);
             if(flag[temp] == 1){
                 for(int i=0; i<details.input[1]; i++){
@@ -287,11 +261,6 @@ void PSJF(Feature details){
             
             
             details.process[temp][2] = 999;
-
-            // for(int n=0; n<details.input[1]; n++){
-            //     printf("\nloop %d n %d - %d", i, n, details.process[n][2]);
-            // }
-            // printf("\n************************************");
         }
         
     }
@@ -338,25 +307,18 @@ void RR(Feature details){
 
     for(int i=0; i<nProcess; i++){
         temp = i;
-        // temp2 = temp;
-        // for(int p=0; p<details.input[1]; p++){
-        //     printf("\npID: %d  AT: %d BT: %d is flagged: %d", details.process[p][0], details.process[p][1], details.process[p][2], flag[p]);
-        // }
         for (int j=0; j<details.input[1]; j++){
-            // printf("\ntemp %d vs nProcess %d\n",temp,nProcess);
             // check if temp >= nProcess
             if(temp >= nProcess-1){
                 if(details.process[j][1] >= 0){
                     temp = j;
                 }
-                // printf("\ntemp is: %d", temp);
             }
             
 
             // check arrival time
             if(details.process[j][1] < details.process[temp][1] && details.process[j][1] >= 0){
                 temp = j;
-                // printf("\ntemp is: %d AT", temp);
             }
         }
         
@@ -373,9 +335,6 @@ void RR(Feature details){
             data[i][2] = ET;
             data[i][3] = QT;
             details.process[temp][2] = newTime;
-            //  for(int p=0; p<nProcess; p++){
-            //     printf("\npID: %d  AT: %d ", details.process[p][0], details.process[p][1]);
-            // }
             /*
                 look for next arrival time
                 check if within process time
@@ -392,37 +351,26 @@ void RR(Feature details){
                }
            }
            int newcAT = details.process[temp2][1] - 1;
-        //    printf("\nbefore: %d >= nice newcAT: %d",details.process[temp2][1], newcAT);
            if(details.process[temp2][1] >= ST && details.process[temp2][1] <= ET && details.process[temp2][1] <= newcAT){
                printf("\nnice pID: %d", details.process[temp2][0]);
            }
            else{
                // look for highest arrival time
                 for(int l=0; l<nProcess; l++){
-                    // printf("\n%d vs %d",details.process[l][1],details.process[temp2][1]);
                     if(details.process[l][1] >= details.process[temp2][1] && details.process[l][1] <= ET){
-                        // printf("\n%d > %d",details.process[l][1],details.process[temp2][1]);
                         temp2 = l;
                     }
                 }
            }
             
-            // printf("\nMax AT: %d", details.process[temp2][1]);
 
             // change arrival time for queue
             
             details.process[temp][1] = details.process[temp2][1] + 1;
-            // if(details.process[temp][2] <= 4){
-            //     // flag[temp] = 0;
-            //     nProcess--;
-            // }
-            // printf("\nNew Arrival Time: %d for pID %d", details.process[temp][1], details.process[temp][0]);
-            // printf("\nRemaining BT: %d",details.process[temp][2]);
         }
         else{
             if(flag[temp][0] == 1 && details.process[temp][2] <= QT && details.process[temp][2] > 0){
                 nProcess++;
-                // printf("\nlast iteration for pID %d", details.process[temp][0]);
                 int newTime = details.process[temp][2] - details.process[temp][2];
                 ST = ET;
                 ET = ET + details.process[temp][2];
@@ -431,10 +379,8 @@ void RR(Feature details){
                 data[i][2] = ET;
                 data[i][3] = details.process[temp][2];
                 details.process[temp][2] = newTime;
-                // printf("\nRemaining BT: %d",details.process[temp][2]);
             }
         }
-        // printf("\nflag temp %d", flag[temp]);
         if(flag[temp][0] == 0 && details.process[temp][2] > 0){
             ST = ET;
             ET = ET + details.process[temp][2];
@@ -450,8 +396,7 @@ void RR(Feature details){
             printf("\n************************************");
             details.process[temp][1] = -1;
         }
-        else if (flag[temp][0] == 1 && details.process[temp][2] == 0){ // == 0
-            // printf("\nflagged %d",details.process[temp][0]);
+        else if (flag[temp][0] == 1 && details.process[temp][2] == 0){ 
             int cBT = 0;
             printf("\nP[%d]", details.process[temp][0]);
             for(int i=0; i<50; i++){
@@ -460,25 +405,19 @@ void RR(Feature details){
                     cBT += data[i][3];
                     ST = data[i][1];
                     ET = data[i][2];
-                    // printf("\ni: %d of data[%d] = Start Time: %d  End Time: %d ",i , data[i][0], data[i][1], data[i][2]);
 
                 }
             }
-            // ST = ET; //remove
             ET = ET + details.process[temp][2];
             
             lET = ET;
             TT = ET - flag[temp][1];
             WT = TT - BT[temp];
             AWT = AWT + WT;
-            // printf("\nStart Time: %d  End Time: %d ", ST, ET); //remove
             printf("\nWaiting Time: %d", WT);
             printf("\nTurnaround Time: %d", TT);
             printf("\n************************************");
             details.process[temp][1] = -1;
-            // for(int i=0; i<50; i++){
-            //     printf("\ni: %d of data[%d] = Start Time: %d  End Time: %d ",i , data[i][0], data[i][1], data[i][2]);
-            // }
         }
     }
 
@@ -504,11 +443,25 @@ int main(){
     GetInputs(fp,&details);
     fclose(fp);
 
-    // while( (X != 0 || X != 1 || X != 2 || X != 3) && (Y <= 3 || Y >= 100) ){
-    //     printf("Invalid input, please try again: ");
-    //     printf("\nInput values X Y Z: ");
-    //     scanf("%d %d %d", &X, &Y, &Z);
-    // }
+    if(details.input[0] < 0 || details.input[0] > 3){
+        printf("Input invalid");
+        exit(1);
+    }
+
+    if(details.input[2] < 1 || details.input[2] > 100){
+        printf("Input invalid");
+        exit(1);
+    }
+
+    if(details.input[1] < 3 || details.input[1] > 100){
+        printf("Input invalid");
+        exit(1);
+    }
+
+    if(details.input[2] < 1 || details.input[2] > 100){
+        printf("Input invalid");
+        exit(1);
+    }
 
     if(details.input[0] != 3){
         details.input[2] = 1;
@@ -518,32 +471,23 @@ int main(){
         // First Come First Serve (FCFS)
         case 0: 
             printf("First Come First Serve (FCFS) Scheduling");
-            // printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
             FCFS(details);
             break;
         // Non-preemptive Shortest-Job First (NSJF)
         case 1:
             printf("Non-preemptive Shortest-Job First (NSJF)");
-            // printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
             NSJF(details);
             break;
         // Preemptive Shortest-Job First (PSJF) 
         case 2:
             printf("Preemptive Shortest-Job First (PSJF)");
-            // printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
             PSJF(details);
             break;
         // Round-Robin (RR)
         case 3:
             printf("Round-Robin (RR)");
-            // printf("\n%d %d %d", details.input[0], details.input[1], details.input[2]);
             RR(details);
             break;
-
-        // default:
-        //     printf("Invalid input, please try again: ");
-        //     scanf("%d %d %d", &X, &Y, &Z);
-        //     break;
     }
     return 0;
 }
